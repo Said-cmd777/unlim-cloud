@@ -118,18 +118,21 @@
     </footer>
 
     <script>
+        // Only accept valid semver strings (e.g. "2.0.0") from the remote source
+        const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
+
         function compareVersions(v1, v2) {
             const parts1 = v1.split('.').map(Number);
             const parts2 = v2.split('.').map(Number);
-            
+
             for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
                 const part1 = parts1[i] || 0;
                 const part2 = parts2[i] || 0;
-                
+
                 if (part1 > part2) return 1;
                 if (part1 < part2) return -1;
             }
-            
+
             return 0;
         }
 
@@ -137,26 +140,40 @@
             try {
                 const currentVersion = "2.0.0";
                 const response = await fetch('https://raw.githubusercontent.com/inulute/unlim-cloud/main/package.json');
-                const { version: latestVersion } = await response.json();
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                const latestVersion = data.version;
+
+                // Validate the version string before using it to prevent XSS
+                if (typeof latestVersion !== 'string' || !VERSION_PATTERN.test(latestVersion)) {
+                    throw new Error('Invalid version format received');
+                }
 
                 if (compareVersions(latestVersion, currentVersion) === 1) {
                     // If update available, display update information and buttons
+                    // Use textContent / createElement instead of innerHTML to prevent XSS
                     const versionInfo = document.getElementById("versionInfo");
-                    versionInfo.innerHTML = `Update Available: Latest Version - ${latestVersion}`;
-                    const versionDisplay = document.getElementById("versionDisplay");
-                    versionDisplay.innerHTML = `
-                        <button id="updateButton">Download</button>
-                        <button id="remindLater">Remind Me Later</button>
-                    `;
-                    
-                    // Listen for button click to redirect to GitHub
-                    document.getElementById("updateButton").addEventListener("click", function() {
+                    versionInfo.textContent = `Update Available: Latest Version - ${latestVersion}`;
+
+                    const updateButton = document.createElement("button");
+                    updateButton.id = "updateButton";
+                    updateButton.textContent = "Download";
+                    updateButton.addEventListener("click", function() {
                         window.location.href = "https://github.com/inulute/unlim-cloud/releases/latest";
                     });
 
-                    // Listen for "Remind Me Later" button click to redirect to donate page
-                    document.getElementById("remindLater").addEventListener("click", function() {
-                        window.location.href = "https://unlim-cloud.web.app";                    });
+                    const remindButton = document.createElement("button");
+                    remindButton.id = "remindLater";
+                    remindButton.textContent = "Remind Me Later";
+                    remindButton.addEventListener("click", function() {
+                        window.location.href = "https://unlim-cloud.web.app";
+                    });
+
+                    const versionDisplay = document.getElementById("versionDisplay");
+                    versionDisplay.appendChild(updateButton);
+                    versionDisplay.appendChild(remindButton);
 
                     // Show donate options
                     document.getElementById("donateOptions").classList.add("show");
@@ -166,7 +183,7 @@
                 }
             } catch (error) {
                 console.error("Error fetching version file:", error);
-                document.getElementById("versionDisplay").innerText = "Error... Check you internet connection and try again.";
+                document.getElementById("versionDisplay").textContent = "Error... Check your internet connection and try again.";
             }
         }
 
