@@ -1,0 +1,63 @@
+PS C:\Users\Said\Desktop\unlim-cloud> git pull
+>> yarn rls
+Already up to date.
+yarn run v1.22.22
+$ tauri build
+error: invalid character `{` in package name: `tauri-plugin-{{name}}`, characters must be Unicode XID characters (numbers, `-`, `_`, or most letters)
+ --> ..\..\..\.cargo\git\checkouts\plugins-workspace-bac95421cc662c04\dce0f02\shared\template\Cargo.toml:2:8
+  |
+2 | name = "tauri-plugin-{{name}}"
+  |        ^^^^^^^^^^^^^^^^^^^^^^^
+    Finished `release` profile [optimized] target(s) in 2.40s
+        Info Target: x64
+     Running candle for "main.wxs"
+     Running light to produce C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\msi\Unlim Cloud_2.0.0_x64_en-US.msi
+        Info Target: x64
+     Running makensis.exe to produce C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\nsis\Unlim Cloud_2.0.0_x64-setup.exe
+    Finished 2 bundles at:
+        C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\msi\Unlim Cloud_2.0.0_x64_en-US.msi
+        C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\nsis\Unlim Cloud_2.0.0_x64-setup.exe
+
+Done in 20.41s.
+PS C:\Users\Said\Desktop\unlim-cloud> Remove-Item -Recurse -Force "$env:APPDATA\com.inulute.unlimcloud" -ErrorAction SilentlyContinue
+>> Remove-Item -Recurse -Force "$env:LOCALAPPDATA\com.inulute.unlimcloud" -ErrorAction SilentlyContinue
+PS C:\Users\Said\Desktop\unlim-cloud> git pull
+>> yarn rls
+Already up to date.
+yarn run v1.22.22
+$ tauri build
+error: invalid character `{` in package name: `tauri-plugin-{{name}}`, characters must be Unicode XID characters (numbers, `-`, `_`, or most letters)
+ --> ..\..\..\.cargo\git\checkouts\plugins-workspace-bac95421cc662c04\dce0f02\shared\template\Cargo.toml:2:8
+  |
+2 | name = "tauri-plugin-{{name}}"
+  |        ^^^^^^^^^^^^^^^^^^^^^^^
+    Finished `release` profile [optimized] target(s) in 1.56s
+        Info Target: x64
+     Running candle for "main.wxs"
+     Running light to produce C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\msi\Unlim Cloud_2.0.0_x64_en-US.msi
+        Info Target: x64
+     Running makensis.exe to produce C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\nsis\Unlim Cloud_2.0.0_x64-setup.exe
+    Finished 2 bundles at:
+        C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\msi\Unlim Cloud_2.0.0_x64_en-US.msi
+        C:\Users\Said\Desktop\unlim-cloud\src-tauri\target\release\bundle\nsis\Unlim Cloud_2.0.0_x64-setup.exe
+
+Done in 21.67s.
+PS C:\Users\Said\Desktop\unlim-cloud>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
