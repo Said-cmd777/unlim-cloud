@@ -9,7 +9,7 @@
     "postinstall": "yarn nvmrc",
     "predev": "yarn nvmrc",
     "tauri": "tauri",
-    "start": "vite",
+    "start": "node server.js",
     "rls": "tauri build"
   },
   "devDependencies": {
