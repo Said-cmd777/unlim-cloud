@@ -139,7 +139,7 @@
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
         "wix": {
-          "fragmentPaths": ["../wix/context-menu.wxs"],
+          "fragmentPaths": ["wix/context-menu.wxs"],
           "componentRefs": ["ContextMenuComponent"]
         }
       }
