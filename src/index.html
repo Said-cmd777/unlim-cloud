@@ -6,527 +6,543 @@
     <title>Unlim Cloud</title>
     <style>
         :root {
-            --bg: #ffffff;
-            --text: #333333;
-            --subtext: #888888;
-            --border-color: #e0e0e0;
-            --error-color: #c0392b;
-            --fallback-color: #2f77fc;
-            --retry-border: #6aabff;
-            --version-label: #bbb;
-            --spinner-track: #e0e0e0;
-            --donate-border: #4a4a4a;
+            --bar-bg: #ffffff;
+            --bar-text: #333;
+            --bar-border: #e5e7eb;
+            --bar-icon: #555;
+            --offline-bg: #ef4444;
+            --update-bg: #10b981;
         }
 
         [data-theme="dark"] {
-            --bg: #0f1117;
-            --text: #e2e8f0;
-            --subtext: #94a3b8;
-            --border-color: #2d3748;
-            --error-color: #fc8181;
-            --fallback-color: #76a9fa;
-            --retry-border: #76a9fa;
-            --version-label: #4a5568;
-            --spinner-track: #2d3748;
-            --donate-border: #4a5568;
+            --bar-bg: #111827;
+            --bar-text: #e5e7eb;
+            --bar-border: #1f2937;
+            --bar-icon: #9ca3af;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bar-bg);
             font-family: 'Verdana', sans-serif;
-            text-align: center;
-            min-height: 100vh;
+            transition: background 0.3s;
+        }
+
+        /* ── Top toolbar ── */
+        #toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 38px;
+            padding: 0 12px;
+            background: var(--bar-bg);
+            border-bottom: 1px solid var(--bar-border);
+            transition: background 0.3s, border-color 0.3s;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-logo {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .toolbar-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--bar-text);
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tb-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: var(--bar-icon);
+            transition: background 0.2s;
+            line-height: 1;
+        }
+
+        .tb-btn:hover { background: var(--bar-border); }
+
+        #offlineIndicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        #offlineIndicator.show { display: flex; }
+
+        /* ── Banners ── */
+        #updateBanner {
+            display: none;
+            background: #10b981;
+            color: white;
+            padding: 7px 16px;
+            font-size: 12px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        #updateBanner.show { display: flex; }
+
+        .update-actions { display: flex; gap: 8px; }
+
+        .banner-btn {
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .banner-btn:hover { background: rgba(255,255,255,0.4); }
+
+        .banner-btn.secondary {
+            background: transparent;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* ── Main area ── */
+        #appContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #contentArea {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Splash screen ── */
+        #splash {
+            position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: var(--bg);
-            color: var(--text);
-            transition: background 0.3s, color 0.3s;
-            user-select: none;
+            background: var(--bar-bg);
+            z-index: 5;
+            transition: opacity 0.4s ease;
         }
 
-        header img {
-            animation: openLogo 0.8s ease forwards;
-            max-width: 160px;
-            display: block;
-            margin: 0 auto 24px;
+        #splash.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
-        @keyframes openLogo {
+        #splash img {
+            width: 90px;
+            animation: popIn 0.7s ease forwards;
+            margin-bottom: 20px;
+        }
+
+        @keyframes popIn {
             0% { transform: scale(0); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .spinner {
-            display: inline-block;
-            width: 36px;
-            height: 36px;
-            border: 3px solid var(--spinner-track);
-            border-top-color: #65de69;
+        .splash-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #34d399;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin: 12px auto;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .status-text {
-            font-size: 14px;
-            color: var(--subtext);
-            margin-top: 8px;
-        }
-
-        #versionInfo {
-            font-size: 15px;
-            font-weight: bold;
-            color: #2a7a2d;
-            margin-bottom: 4px;
-            min-height: 22px;
-        }
-
-        #versionDisplay { margin-top: 10px; }
-
-        button {
-            margin: 6px 4px;
-            padding: 10px 22px;
-            border: 2px solid #65de69;
-            background-color: transparent;
-            color: #65de69;
-            font-size: 15px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: background-color 0.25s, color 0.25s, border-color 0.25s;
-            font-family: 'Verdana', sans-serif;
-        }
-
-        button:hover {
-            border-color: #4aab4e;
-            background-color: #4aab4e;
-            color: white;
-        }
-
-        button:focus-visible {
-            outline: 3px solid #65de69;
-            outline-offset: 2px;
-        }
-
-        #remindLater {
-            border-color: var(--border-color);
-            color: var(--subtext);
-        }
-
-        #remindLater:hover {
-            border-color: #ffa5a3;
-            background-color: #ffa5a3;
-            color: white;
-        }
-
-        #retryBtn {
-            border-color: var(--retry-border);
-            color: var(--retry-border);
+        .splash-text {
+            font-size: 13px;
+            color: #9ca3af;
             margin-top: 12px;
         }
 
-        #retryBtn:hover {
-            border-color: #3a88ff;
-            background-color: #3a88ff;
-            color: white;
-        }
-
-        #errorBox { display: none; flex-direction: column; align-items: center; }
-        #errorBox.show { display: flex; }
-
-        .error-msg { font-size: 14px; color: var(--error-color); margin-bottom: 4px; }
-
-        .fallback-link {
-            font-size: 13px;
-            color: var(--fallback-color);
-            text-decoration: none;
-            margin-top: 6px;
-        }
-        .fallback-link:hover { text-decoration: underline; }
-
-        #donateOptions { display: none; margin-top: 24px; }
-        #donateOptions.show { display: block; }
-
-        .donate-icon-container {
-            display: inline-block;
-            border: 2px solid var(--donate-border);
-            border-radius: 6px;
-            padding: 6px;
-            width: 104px;
-            transition: background-color 0.25s;
-            cursor: pointer;
-        }
-        .donate-icon-container:hover { background-color: #f7ffa3; }
-        .donate-icon { width: 40px; height: auto; display: block; margin: 0 auto; }
-        #donateMessage { font-size: 14px; color: var(--subtext); margin-bottom: 10px; }
-
-        #currentVersionLabel {
-            font-size: 12px;
-            color: var(--version-label);
-            margin-top: 32px;
-        }
-
-        /* ── Dark mode toggle ── */
-        #darkToggle {
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            background: none;
-            border: 1.5px solid var(--border-color);
-            color: var(--text);
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        #darkToggle:hover { background: var(--border-color); }
-
-        /* ── Offline banner ── */
-        #offlineBanner {
+        /* ── Offline full page ── */
+        #offlinePage {
             display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            background: #e53e3e;
-            color: white;
-            padding: 9px 16px;
-            font-size: 13px;
+            position: absolute;
+            inset: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bar-bg);
+            z-index: 6;
+        }
+
+        #offlinePage.show { display: flex; }
+
+        .offline-icon { font-size: 56px; margin-bottom: 16px; }
+
+        .offline-title {
+            font-size: 18px;
             font-weight: bold;
-            text-align: center;
-            z-index: 100;
-            animation: slideDown 0.3s ease;
+            color: var(--bar-text);
+            margin-bottom: 8px;
         }
-        #offlineBanner.show { display: block; }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
+
+        .offline-sub {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 20px;
         }
+
+        .retry-btn {
+            padding: 9px 24px;
+            border: 2px solid #34d399;
+            background: transparent;
+            color: #34d399;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Verdana', sans-serif;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .retry-btn:hover { background: #34d399; color: white; }
+
+        /* ── App iframe ── */
+        #appFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+
+        #appFrame.show { display: block; }
 
         /* ── Drag & Drop overlay ── */
         #dropOverlay {
             display: none;
-            position: fixed;
+            position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.82);
-            z-index: 200;
+            background: rgba(0, 0, 0, 0.80);
+            z-index: 20;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             pointer-events: none;
         }
+
         #dropOverlay.show { display: flex; }
 
-        .drop-icon {
-            font-size: 72px;
-            animation: floatUp 0.7s ease infinite alternate;
-            margin-bottom: 20px;
-        }
-        @keyframes floatUp {
+        .drop-cloud { font-size: 72px; animation: float 0.8s ease-in-out infinite alternate; margin-bottom: 16px; }
+
+        @keyframes float {
             from { transform: translateY(0); }
             to { transform: translateY(-14px); }
         }
-        .drop-title {
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .drop-sub {
-            color: rgba(255, 255, 255, 0.65);
-            font-size: 14px;
-        }
+
+        .drop-title { color: #fff; font-size: 22px; font-weight: bold; margin-bottom: 6px; }
+        .drop-sub { color: rgba(255,255,255,0.6); font-size: 13px; }
     </style>
 </head>
-<body>
-    <div id="offlineBanner">&#9888; You are offline — check your internet connection.</div>
+<body data-theme="light">
+<div id="appContainer">
 
-    <button id="darkToggle" title="Toggle dark mode">🌙</button>
-
-    <div id="dropOverlay">
-        <div class="drop-icon">☁️</div>
-        <div class="drop-title">Drop to Open in Unlim Cloud</div>
-        <div class="drop-sub">Release to launch the web app</div>
+    <!-- Toolbar -->
+    <div id="toolbar">
+        <div class="toolbar-left">
+            <img class="toolbar-logo" src="/assets/unlim-clear.png" alt="logo">
+            <span class="toolbar-title">Unlim Cloud</span>
+        </div>
+        <div class="toolbar-right">
+            <div id="offlineIndicator">
+                <span>⚠</span>
+                <span>Offline</span>
+            </div>
+            <button class="tb-btn" id="darkToggle" title="Toggle dark mode">🌙</button>
+            <button class="tb-btn" id="reloadBtn" title="Reload app">↻</button>
+        </div>
     </div>
 
-    <header>
-        <img src="/assets/unlim-clear.png" alt="Unlim Cloud Logo">
-    </header>
+    <!-- Update banner -->
+    <div id="updateBanner">
+        <span id="updateText">A new version is available!</span>
+        <div class="update-actions">
+            <button class="banner-btn" id="downloadUpdateBtn">Download</button>
+            <button class="banner-btn secondary" id="dismissUpdateBtn">Dismiss</button>
+        </div>
+    </div>
 
-    <main>
-        <div id="versionInfo"></div>
-        <div id="versionDisplay"></div>
+    <!-- Content area -->
+    <div id="contentArea">
 
-        <div id="loadingBox">
-            <div class="spinner"></div>
-            <p class="status-text">Checking for updates…</p>
+        <!-- Drag & drop overlay -->
+        <div id="dropOverlay">
+            <div class="drop-cloud">☁️</div>
+            <div class="drop-title">Drop files to upload</div>
+            <div class="drop-sub">Release to open Unlim Cloud uploader</div>
         </div>
 
-        <div id="errorBox">
-            <p class="error-msg" id="errorMsg">Could not reach the update server.</p>
-            <a class="fallback-link" href="https://unlim-cloud.web.app" target="_blank" rel="noopener noreferrer">
-                Open Unlim Cloud Web App
-            </a>
-            <button id="retryBtn">Retry</button>
+        <!-- Splash / loading -->
+        <div id="splash">
+            <img src="/assets/unlim-clear.png" alt="Unlim Cloud">
+            <div class="splash-spinner"></div>
+            <p class="splash-text" id="splashText">Connecting…</p>
         </div>
 
-        <div id="donateOptions">
-            <p id="donateMessage">If you find this app useful, consider supporting us.</p>
-            <a id="donateLink" href="https://donate.inulute.vercel.app" target="_blank" rel="noopener noreferrer">
-                <div class="donate-icon-container">
-                    <img src="/assets/donate.png" alt="Donate" class="donate-icon">
-                </div>
-            </a>
+        <!-- Offline full screen -->
+        <div id="offlinePage">
+            <div class="offline-icon">📡</div>
+            <div class="offline-title">You're offline</div>
+            <div class="offline-sub">Check your internet connection and try again.</div>
+            <button class="retry-btn" id="retryOnline">Retry</button>
         </div>
-    </main>
 
-    <p id="currentVersionLabel">v2.0.0</p>
+        <!-- The actual web app -->
+        <iframe
+            id="appFrame"
+            src="https://unlim-cloud.web.app"
+            title="Unlim Cloud App"
+            allow="clipboard-read; clipboard-write"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals"
+        ></iframe>
 
-    <script>
-        const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
-        const CURRENT_VERSION = "2.0.0";
-        const WEB_APP_URL = "https://unlim-cloud.web.app";
-        const GITHUB_RELEASES_URL = "https://github.com/inulute/unlim-cloud/releases/latest";
-        const VERSION_SOURCE = "https://raw.githubusercontent.com/inulute/unlim-cloud/main/package.json";
-        const FETCH_TIMEOUT_MS = 8000;
+    </div>
+</div>
 
-        // ── Dark Mode ────────────────────────────────────────────────────────────────
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        let isDark = localStorage.getItem('theme') === 'dark' ||
-                     (localStorage.getItem('theme') === null && prefersDark.matches);
+<script>
+    const WEB_APP_URL = "https://unlim-cloud.web.app";
+    const GITHUB_RELEASES_URL = "https://github.com/inulute/unlim-cloud/releases/latest";
+    const VERSION_SOURCE = "https://raw.githubusercontent.com/inulute/unlim-cloud/main/package.json";
+    const CURRENT_VERSION = "2.0.0";
+    const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
 
-        function applyTheme(dark) {
-            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-            document.getElementById('darkToggle').textContent = dark ? '☀️' : '🌙';
-        }
+    // ── Dark Mode ─────────────────────────────────────────────────────────────
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    let isDark = localStorage.getItem('theme') === 'dark' ||
+                 (localStorage.getItem('theme') === null && prefersDark.matches);
 
+    function applyTheme(dark) {
+        document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+        document.getElementById('darkToggle').textContent = dark ? '☀️' : '🌙';
+    }
+
+    applyTheme(isDark);
+
+    document.getElementById('darkToggle').addEventListener('click', () => {
+        isDark = !isDark;
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
         applyTheme(isDark);
+    });
 
-        document.getElementById('darkToggle').addEventListener('click', () => {
-            isDark = !isDark;
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    prefersDark.addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) {
+            isDark = e.matches;
             applyTheme(isDark);
-        });
+        }
+    });
 
-        prefersDark.addEventListener('change', e => {
-            if (localStorage.getItem('theme') === null) {
-                isDark = e.matches;
-                applyTheme(isDark);
+    // ── Reload ────────────────────────────────────────────────────────────────
+    document.getElementById('reloadBtn').addEventListener('click', () => {
+        const frame = document.getElementById('appFrame');
+        frame.src = frame.src;
+    });
+
+    // ── Offline Detection ─────────────────────────────────────────────────────
+    const offlineIndicator = document.getElementById('offlineIndicator');
+    const offlinePage = document.getElementById('offlinePage');
+    const appFrame = document.getElementById('appFrame');
+    const splash = document.getElementById('splash');
+
+    function syncOnlineStatus() {
+        if (!navigator.onLine) {
+            offlineIndicator.classList.add('show');
+            if (!appFrame.classList.contains('show')) {
+                offlinePage.classList.add('show');
+                splash.classList.add('hidden');
             }
-        });
+        } else {
+            offlineIndicator.classList.remove('show');
+            offlinePage.classList.remove('show');
+        }
+    }
 
-        // ── Offline Detection ────────────────────────────────────────────────────────
-        function syncOfflineBanner() {
-            const banner = document.getElementById('offlineBanner');
-            if (!navigator.onLine) {
-                banner.classList.add('show');
-            } else {
-                banner.classList.remove('show');
+    window.addEventListener('online', () => {
+        syncOnlineStatus();
+        if (!appFrame.classList.contains('show')) loadApp();
+    });
+    window.addEventListener('offline', syncOnlineStatus);
+    syncOnlineStatus();
+
+    document.getElementById('retryOnline').addEventListener('click', () => {
+        if (navigator.onLine) {
+            offlinePage.classList.remove('show');
+            loadApp();
+        }
+    });
+
+    // ── Native Notifications ──────────────────────────────────────────────────
+    async function sendNotification(title, body) {
+        try {
+            if (window.__TAURI__?.notification) {
+                const { isPermissionGranted, requestPermission, sendNotification: n } = window.__TAURI__.notification;
+                let ok = await isPermissionGranted();
+                if (!ok) ok = (await requestPermission()) === 'granted';
+                if (ok) { n({ title, body }); return; }
             }
-        }
-
-        window.addEventListener('online', syncOfflineBanner);
-        window.addEventListener('offline', syncOfflineBanner);
-        syncOfflineBanner();
-
-        // ── Native Notifications ─────────────────────────────────────────────────────
-        async function sendNotification(title, body) {
-            try {
-                if (window.__TAURI__?.notification) {
-                    const { isPermissionGranted, requestPermission, sendNotification: tauriNotify } = window.__TAURI__.notification;
-                    let granted = await isPermissionGranted();
-                    if (!granted) {
-                        const perm = await requestPermission();
-                        granted = (perm === 'granted');
-                    }
-                    if (granted) {
-                        tauriNotify({ title, body });
-                        return;
-                    }
-                }
-                if ('Notification' in window) {
-                    if (Notification.permission === 'granted') {
-                        new Notification(title, { body });
-                    } else if (Notification.permission !== 'denied') {
-                        const perm = await Notification.requestPermission();
-                        if (perm === 'granted') new Notification(title, { body });
-                    }
-                }
-            } catch (e) {
-                console.warn('Notification unavailable:', e);
+            if ('Notification' in window && Notification.permission !== 'denied') {
+                if (Notification.permission !== 'granted') await Notification.requestPermission();
+                if (Notification.permission === 'granted') new Notification(title, { body });
             }
-        }
+        } catch (_) {}
+    }
 
-        // ── Taskbar Progress ─────────────────────────────────────────────────────────
-        async function setTaskbarProgress(progress) {
-            try {
-                if (window.__TAURI__?.window?.appWindow) {
-                    const { appWindow } = window.__TAURI__.window;
-                    if (progress === null || progress >= 100) {
-                        await appWindow.setProgressBar({ status: 'none', progress: 0 });
-                    } else {
-                        await appWindow.setProgressBar({ status: 'normal', progress });
-                    }
-                }
-            } catch (_) {}
-        }
-
-        // ── Drag & Drop ──────────────────────────────────────────────────────────────
-        let dragDepth = 0;
-        const dropOverlay = document.getElementById('dropOverlay');
-
-        document.addEventListener('dragenter', e => {
-            e.preventDefault();
-            dragDepth++;
-            dropOverlay.classList.add('show');
-        });
-
-        document.addEventListener('dragleave', () => {
-            dragDepth--;
-            if (dragDepth <= 0) {
-                dragDepth = 0;
-                dropOverlay.classList.remove('show');
-            }
-        });
-
-        document.addEventListener('dragover', e => e.preventDefault());
-
-        document.addEventListener('drop', async e => {
-            e.preventDefault();
-            dragDepth = 0;
-            dropOverlay.classList.remove('show');
-            const files = e.dataTransfer?.files;
-            if (files?.length > 0) {
-                window.open(WEB_APP_URL, '_blank', 'noopener,noreferrer');
-                await sendNotification(
-                    'Unlim Cloud',
-                    `Opening web app to upload ${files.length} file${files.length > 1 ? 's' : ''}.`
-                );
-            }
-        });
-
-        if (window.__TAURI__?.event) {
-            window.__TAURI__.event.listen('tauri://file-drop-hover', () => {
-                dropOverlay.classList.add('show');
-            });
-            window.__TAURI__.event.listen('tauri://file-drop-cancelled', () => {
-                dropOverlay.classList.remove('show');
-            });
-            window.__TAURI__.event.listen('tauri://file-drop', async event => {
-                dropOverlay.classList.remove('show');
-                const paths = event.payload;
-                if (paths?.length > 0) {
-                    window.open(WEB_APP_URL, '_blank', 'noopener,noreferrer');
-                    await sendNotification(
-                        'Unlim Cloud',
-                        `Opening web app to upload ${paths.length} file${paths.length > 1 ? 's' : ''}.`
-                    );
-                }
-            });
-        }
-
-        // ── Update Check ─────────────────────────────────────────────────────────────
-        function compareVersions(v1, v2) {
-            const p1 = v1.split('.').map(Number);
-            const p2 = v2.split('.').map(Number);
-            for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
-                const a = p1[i] || 0, b = p2[i] || 0;
-                if (a > b) return 1;
-                if (a < b) return -1;
-            }
-            return 0;
-        }
-
-        function showLoading(visible) {
-            document.getElementById('loadingBox').style.display = visible ? 'block' : 'none';
-        }
-
-        function showError(message) {
-            showLoading(false);
-            setTaskbarProgress(null);
-            document.getElementById('errorMsg').textContent = message || 'Could not reach the update server.';
-            document.getElementById('errorBox').classList.add('show');
-        }
-
-        function hideError() {
-            document.getElementById('errorBox').classList.remove('show');
-        }
-
-        async function checkForUpdates() {
-            if (!navigator.onLine) {
-                showLoading(false);
-                showError('You are offline. Connect to the internet and retry.');
-                return;
-            }
-
-            showLoading(true);
-            hideError();
-            document.getElementById('versionInfo').textContent = '';
-            document.getElementById('versionDisplay').innerHTML = '';
-            document.getElementById('donateOptions').classList.remove('show');
-
-            await setTaskbarProgress(20);
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
-            try {
-                await setTaskbarProgress(50);
-                const response = await fetch(VERSION_SOURCE, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                await setTaskbarProgress(80);
-
-                if (!response.ok) throw new Error(`Server returned ${response.status}`);
-
-                const data = await response.json();
-                const latestVersion = data.version;
-
-                if (typeof latestVersion !== 'string' || !VERSION_PATTERN.test(latestVersion)) {
-                    throw new Error('Invalid version format received');
-                }
-
-                await setTaskbarProgress(100);
-                showLoading(false);
-
-                if (compareVersions(latestVersion, CURRENT_VERSION) === 1) {
-                    document.getElementById('versionInfo').textContent = `Update Available: v${latestVersion}`;
-
-                    const updateBtn = document.createElement('button');
-                    updateBtn.id = 'updateButton';
-                    updateBtn.textContent = 'Download Update';
-                    updateBtn.addEventListener('click', () => window.open(GITHUB_RELEASES_URL, '_blank', 'noopener,noreferrer'));
-
-                    const remindBtn = document.createElement('button');
-                    remindBtn.id = 'remindLater';
-                    remindBtn.textContent = 'Continue to Web App';
-                    remindBtn.addEventListener('click', () => { window.location.href = WEB_APP_URL; });
-
-                    document.getElementById('versionDisplay').appendChild(updateBtn);
-                    document.getElementById('versionDisplay').appendChild(remindBtn);
-                    document.getElementById('donateOptions').classList.add('show');
-
-                    await sendNotification(
-                        'Unlim Cloud — Update Available',
-                        `Version ${latestVersion} is ready. Download it to get the latest features.`
-                    );
+    // ── Taskbar Progress ──────────────────────────────────────────────────────
+    async function setTaskbarProgress(progress) {
+        try {
+            if (window.__TAURI__?.window?.appWindow) {
+                const { appWindow } = window.__TAURI__.window;
+                if (progress === null || progress >= 100) {
+                    await appWindow.setProgressBar({ status: 'none', progress: 0 });
                 } else {
-                    window.location.href = WEB_APP_URL;
+                    await appWindow.setProgressBar({ status: 'normal', progress });
                 }
-            } catch (error) {
-                clearTimeout(timeoutId);
-                console.error('Update check failed:', error);
-                showError(
-                    error.name === 'AbortError'
-                        ? 'Connection timed out. Check your internet and try again.'
-                        : 'Could not reach the update server. Check your connection.'
-                );
             }
-        }
+        } catch (_) {}
+    }
 
-        document.getElementById('retryBtn').addEventListener('click', checkForUpdates);
-        document.addEventListener('DOMContentLoaded', checkForUpdates);
-    </script>
+    // ── Update Check ──────────────────────────────────────────────────────────
+    function compareVersions(v1, v2) {
+        const p1 = v1.split('.').map(Number);
+        const p2 = v2.split('.').map(Number);
+        for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+            const a = p1[i] || 0, b = p2[i] || 0;
+            if (a > b) return 1;
+            if (a < b) return -1;
+        }
+        return 0;
+    }
+
+    async function checkForUpdates() {
+        try {
+            await setTaskbarProgress(30);
+            const ctrl = new AbortController();
+            setTimeout(() => ctrl.abort(), 8000);
+            const res = await fetch(VERSION_SOURCE, { signal: ctrl.signal });
+            if (!res.ok) return;
+            const data = await res.json();
+            const latest = data.version;
+            await setTaskbarProgress(100);
+            if (typeof latest === 'string' && VERSION_PATTERN.test(latest) && compareVersions(latest, CURRENT_VERSION) === 1) {
+                const banner = document.getElementById('updateBanner');
+                document.getElementById('updateText').textContent = `Update available: v${latest}`;
+                banner.classList.add('show');
+                await sendNotification('Unlim Cloud — Update Available', `Version ${latest} is ready to download.`);
+            }
+        } catch (_) {
+            await setTaskbarProgress(null);
+        }
+    }
+
+    document.getElementById('downloadUpdateBtn').addEventListener('click', () => {
+        window.open(GITHUB_RELEASES_URL, '_blank', 'noopener,noreferrer');
+    });
+
+    document.getElementById('dismissUpdateBtn').addEventListener('click', () => {
+        document.getElementById('updateBanner').classList.remove('show');
+    });
+
+    // ── Load App ──────────────────────────────────────────────────────────────
+    function loadApp() {
+        if (!navigator.onLine) { syncOnlineStatus(); return; }
+        const splashEl = document.getElementById('splash');
+        const frame = document.getElementById('appFrame');
+        document.getElementById('splashText').textContent = 'Loading Unlim Cloud…';
+
+        frame.onload = () => {
+            splashEl.classList.add('hidden');
+            frame.classList.add('show');
+            setTaskbarProgress(null);
+        };
+
+        if (!frame.src || frame.src === 'about:blank') {
+            frame.src = WEB_APP_URL;
+        } else {
+            splashEl.classList.add('hidden');
+            frame.classList.add('show');
+        }
+    }
+
+    // ── Drag & Drop ───────────────────────────────────────────────────────────
+    let dragDepth = 0;
+    const dropOverlay = document.getElementById('dropOverlay');
+
+    document.addEventListener('dragenter', e => {
+        e.preventDefault();
+        dragDepth++;
+        dropOverlay.classList.add('show');
+    });
+
+    document.addEventListener('dragleave', () => {
+        dragDepth--;
+        if (dragDepth <= 0) { dragDepth = 0; dropOverlay.classList.remove('show'); }
+    });
+
+    document.addEventListener('dragover', e => e.preventDefault());
+
+    document.addEventListener('drop', async e => {
+        e.preventDefault();
+        dragDepth = 0;
+        dropOverlay.classList.remove('show');
+        const files = e.dataTransfer?.files;
+        if (files?.length > 0) {
+            window.open(WEB_APP_URL, '_blank', 'noopener,noreferrer');
+            await sendNotification('Unlim Cloud', `Opening uploader for ${files.length} file${files.length > 1 ? 's' : ''}.`);
+        }
+    });
+
+    if (window.__TAURI__?.event) {
+        window.__TAURI__.event.listen('tauri://file-drop-hover', () => dropOverlay.classList.add('show'));
+        window.__TAURI__.event.listen('tauri://file-drop-cancelled', () => dropOverlay.classList.remove('show'));
+        window.__TAURI__.event.listen('tauri://file-drop', async e => {
+            dropOverlay.classList.remove('show');
+            const paths = e.payload;
+            if (paths?.length > 0) {
+                window.open(WEB_APP_URL, '_blank', 'noopener,noreferrer');
+                await sendNotification('Unlim Cloud', `Opening uploader for ${paths.length} file${paths.length > 1 ? 's' : ''}.`);
+            }
+        });
+    }
+
+    // ── Boot ──────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        loadApp();
+        checkForUpdates();
+    });
+</script>
 </body>
 </html>

@@ -145,7 +145,7 @@
       }
     },
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data:; connect-src https://raw.githubusercontent.com https://unlim-cloud.web.app; form-action 'none'; base-uri 'self'"
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: https:; connect-src https://raw.githubusercontent.com https://unlim-cloud.web.app; frame-src https://unlim-cloud.web.app; form-action 'none'; base-uri 'self'"
     },
 
     "windows": [
