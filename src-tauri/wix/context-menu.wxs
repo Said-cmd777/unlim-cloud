@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="ContextMenuComponent" Guid="A3F2B1C4-D5E6-7890-ABCD-EF1234567890">
+        <!-- "Send to Unlim Cloud" right-click entry for all files -->
+        <RegistryValue
+          Root="HKCU"
+          Key="SOFTWARE\Classes\*\shell\UnlimCloud"
+          Name=""
+          Value="Send to Unlim Cloud"
+          Type="string"
+          Action="write" />
+        <RegistryValue
+          Root="HKCU"
+          Key="SOFTWARE\Classes\*\shell\UnlimCloud"
+          Name="Icon"
+          Value="[INSTALLDIR]unlim-cloud.exe,0"
+          Type="string"
+          Action="write" />
+        <RegistryValue
+          Root="HKCU"
+          Key="SOFTWARE\Classes\*\shell\UnlimCloud\command"
+          Name=""
+          Value="&quot;[INSTALLDIR]unlim-cloud.exe&quot; &quot;%1&quot;"
+          Type="string"
+          Action="write" />
+
+        <!-- "Send to Unlim Cloud" right-click entry for folders -->
+        <RegistryValue
+          Root="HKCU"
+          Key="SOFTWARE\Classes\Directory\shell\UnlimCloud"
+          Name=""
+          Value="Send to Unlim Cloud"
+          Type="string"
+          Action="write" />
+        <RegistryValue
+          Root="HKCU"
+          Key="SOFTWARE\Classes\Directory\shell\UnlimCloud"
+          Name="Icon"
+          Value="[INSTALLDIR]unlim-cloud.exe,0"
+          Type="string"
+          Action="write" />
+        <RegistryValue
+          Root="HKCU"
+          Key="SOFTWARE\Classes\Directory\shell\UnlimCloud\command"
+          Name=""
+          Value="&quot;[INSTALLDIR]unlim-cloud.exe&quot; &quot;%1&quot;"
+          Type="string"
+          Action="write" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
